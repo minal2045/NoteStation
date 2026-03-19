@@ -898,7 +898,35 @@ if ($universities_result === false) {
             color: #721c24;
         }
         
-        .rating-stars {
+        /* Rating Stars in Modal */
+        .rating-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .rating-star-lg {
+            font-size: 40px;
+            color: #ffc107;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .rating-star-lg:hover {
+            transform: scale(1.2);
+        }
+        
+        .rating-star-lg.inactive {
+            color: #e0e0e0;
+        }
+        
+        .rating-info {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        /* .rating-stars {
             display: inline-flex;
             align-items: center;
             gap: 2px;
@@ -909,7 +937,7 @@ if ($universities_result === false) {
         .rating-count {
             color: #888;
             font-size: 0.8rem;
-        }
+        } */
 
         /* Empty State */
         .empty-state {
@@ -2083,6 +2111,119 @@ if ($universities_result === false) {
             }
         }
         
+        <?php endif; ?>
+        <?php if ($is_logged_in && !$is_admin): ?>
+        // Function to load user's rating
+        function loadUserRating(resourceId) {
+            $.ajax({
+                url: `get_rating.php?id=${resourceId}`,
+                type: 'GET',
+                success: function(data) {
+                    if (data.rating) {
+                        $('#currentRating').text(`Your rating: ${data.rating}/5 - ${data.review || ''}`);
+                        $('#currentRatingContainer').show();
+                    } else {
+                        $('#currentRatingContainer').hide();
+                    }
+                }
+            });
+        }
+        
+        // Rating star hover effect
+        $('.rating-star-lg').hover(
+            function() {
+                const rating = $(this).data('rating');
+                highlightStars(rating);
+                $('#ratingInfo').text(getRatingText(rating));
+            },
+            function() {
+                if (selectedRating === 0) {
+                    resetStars();
+                    $('#ratingInfo').text('Select a rating');
+                } else {
+                    highlightStars(selectedRating);
+                    $('#ratingInfo').text(getRatingText(selectedRating));
+                }
+            }
+        );
+        
+        // Rating star click
+        $('.rating-star-lg').click(function() {
+            selectedRating = $(this).data('rating');
+            highlightStars(selectedRating);
+            $('#ratingInfo').text(getRatingText(selectedRating));
+        });
+        
+        // Submit rating
+        $('#submitRating').click(function() {
+            if (selectedRating === 0) {
+                alert('Please select a rating');
+                return;
+            }
+            
+            const review = $('#ratingReview').val();
+            
+            $.ajax({
+                url: 'submit_rating.php',
+                type: 'POST',
+                data: {
+                    resource_id: currentResourceId,
+                    rating: selectedRating,
+                    review: review
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Close rating modal
+                        bootstrap.Modal.getInstance(document.getElementById('ratingModal')).hide();
+                        
+                        // Reset rating
+                        selectedRating = 0;
+                        resetStars();
+                        $('#ratingReview').val('');
+                        
+                        // Show success message
+                        alert('Rating submitted successfully!');
+                        
+                        // Reload resource details to show updated rating
+                        loadResourceDetails(currentResourceId);
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Failed to submit rating');
+                }
+            });
+        });
+        
+        // Helper function to highlight stars
+        function highlightStars(rating) {
+            $('.rating-star-lg').each(function(index) {
+                if (index < rating) {
+                    $(this).removeClass('inactive');
+                } else {
+                    $(this).addClass('inactive');
+                }
+            });
+        }
+        
+        // Helper function to reset stars
+        function resetStars() {
+            $('.rating-star-lg').addClass('inactive');
+        }
+        
+        // Helper function to get rating text
+        function getRatingText(rating) {
+            const texts = [
+                '',
+                'Poor - Not helpful at all',
+                'Fair - Somewhat helpful',
+                'Good - Helpful resource',
+                'Very Good - Very helpful',
+                'Excellent - Outstanding resource!'
+            ];
+            return texts[rating];
+        }
         <?php endif; ?>
         
         $('#viewFileBtn').click(function() {
