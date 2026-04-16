@@ -892,6 +892,15 @@ unset($_SESSION['admin_error']);
             .footer-section h4::after { width: 40px; }
             .footer-bottom { padding-left: 0; }
         }
+        /* Download button report*/
+        .download-btn-hover {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .download-btn-hover:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -1528,7 +1537,28 @@ unset($_SESSION['admin_error']);
                 </div>
             </div>
         </div>
+        <!-- Download Section -->
+        <div style="background: #f8f9fa; border-radius: 10px; padding: 15px 20px; margin: 20px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <span>
+                <i class="fas fa-chart-line" style="color: #654D87;"></i>
+                <strong style="margin-left: 8px;">Download Complete Admin Report:</strong>
+                <span style="color: #666; font-size: 13px; margin-left: 10px;">All data in one file</span>
+            </span>
+            <div style="display: flex; gap: 10px;">
+                <a href="download_full_report.php?format=csv" class="download-btn-hover" style="background: #28a745; color: white; padding: 6px 15px; border-radius: 5px; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 5px;">
+                    <i class="fas fa-file-csv"></i> CSV
+                </a>
+                <a href="download_full_report.php?format=excel" class="download-btn-hover" style="background: #1e7e34; color: white; padding: 6px 15px; border-radius: 5px; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 5px;">
+                    <i class="fas fa-file-excel"></i> Excel
+                </a>
+                <a href="download_full_report.php?format=pdf" class="download-btn-hover" style="background: #dc3545; color: white; padding: 6px 15px; border-radius: 5px; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 5px;">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </a>
+            </div>
+        </div>
     </div>
+
+    
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
